@@ -12,6 +12,7 @@ import { lucia } from "./lib/auth";
 import { Context } from "./lib/context";
 import { githubLoginRouter } from "./routes/login/github";
 import { logoutRouter } from "./routes/logout";
+import { cache } from "./lib/middlewares";
 
 const mode =
   process.env.NODE_ENV === "test" ? "development" : process.env.NODE_ENV;
@@ -24,6 +25,7 @@ const app = new Hono<Context>();
  */
 app.use(
   "/assets/*",
+  cache(60 * 60 * 24 * 30), // 30 days
   serveStatic({ root: "./build/client" })
 );
 
@@ -32,6 +34,7 @@ app.use(
  */
 app.use(
   "*",
+  cache(60 * 60), // 1 hour
   serveStatic({ root: isProductionMode ? "./build/client" : "./public" })
 );
 
